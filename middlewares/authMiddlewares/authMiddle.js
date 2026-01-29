@@ -1,23 +1,33 @@
 const {verifyToken} = require("../../utils/jwt");
 
 const authMiddle = (req, res, next) => {
-    try{
-        const token = req.headers.authorization.split(" ")[1];
-        console.log("Token", token);        
-        if(!token){
-            console.log("Token not found")
-            res.status(401);
-            return res.json({ message: "Token not found" })
+    let token = req.headers.authorization?.split(" ")[1];
+    if(!token){
+        console.log("Token not found")
+        res.status(401);
+        return res.json({ message: "Token not found..." , status: 401, data:[]});
+    }
+    
+    let isVerified = verifyToken(token);
+    if(!isVerified){
+        console.log("Token is not verified")
+        res.status(401);
+        return res.json({ message: "Token is not verified..." , status: 401, data:[]});
+    }
+
+    req.user = isVerified;
+    next();
+}
+
+const authorized = (roles) => {
+    console.log("Roles", roles);
+    return (req, res, next) => {
+        if(!roles.includes(req.user.role)){
+            res.status(403);
+            return res.json({ message: "Not authorized..." , status: 403, data:[]});
         }
-        const decoded = verifyToken(token);
-        req.user = decoded;
-        console.log("User authenticated successfully", decoded);
         next();
-    }catch(err){
-        console.log("Error in auth middle", err)
-        res.status(500);
-        return res.json({ message: err.message })
     }
 }
 
-module.exports = {authMiddle}
+module.exports = {authMiddle, authorized }

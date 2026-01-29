@@ -11,6 +11,7 @@ const verifyToken = (token) => {
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Token verified successfully", decoded);
     return decoded;
+    
 }
 
 module.exports = {generateToken, verifyToken};

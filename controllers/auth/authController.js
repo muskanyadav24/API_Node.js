@@ -1,7 +1,7 @@
-const User = require("../models/userModel")
+const User = require("../../models/userModel")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
-const {generateToken} = require("../utils/jwt");
+const {generateToken} = require("../../utils/jwt");
 
 const register = async (req, res) => {
     try{
@@ -60,4 +60,5 @@ const login = async (req, res) => {
         return res.json({ message: err.message })
     }
 }
-module.exports = { register, login }
+
+module.exports = {register, login}

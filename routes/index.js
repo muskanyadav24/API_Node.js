@@ -1,25 +1,15 @@
-// const express = require("express");
-// const router = express.Router();
-// const dashboardRoute = require("./dashbord/dashboard");
-
-// const { register, login } = require("../controllers/authController");
-
-// router.post("/register", register);
-// router.post("/login", login);
-
-// router.use(dashboardRoute);
-
-// module.exports = router;
-
 const express = require("express");
 const router = express.Router();
 
-const dashboardRoute = require("./dashbord/dashboard");
-const { register, login } = require("../controllers/authController");
+const authRoute = require("./auth/authRoute");
+const adminRoute = require("./admin/admin");
+const teacherRoute = require("./teacher/teacher");
+const studentRoute = require("./student/student");
 
-router.post("/register", register);
-router.post("/login", login);
-
-router.use(dashboardRoute); 
+router.use("/auth",authRoute); 
+router.use("/admin",adminRoute); 
+router.use("/teacher",teacherRoute);
+router.use("/student",studentRoute); 
 
 module.exports = router;
+
