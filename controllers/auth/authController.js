@@ -5,8 +5,8 @@ const {generateToken} = require("../../utils/jwt");
 
 const register = async (req, res) => {
     try{
-        const {name, email, password} = req.body
-        if(!name || !email || !password){
+        const {firstname, lastname, username, email, password} = req.body
+        if(!firstname || !lastname || !username || !email || !password){
             console.log("All fields are required");
             res.status(400);
             return res.json({ message: "All fields are required" });
@@ -18,7 +18,7 @@ const register = async (req, res) => {
             return res.json({ message: "User already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({name, email, password: hashedPassword});
+        const newUser = await User.create({firstname, lastname, username, email, password: hashedPassword});
         res.status(201);
         return res.json({ message: "User created successfully", newUser })
 

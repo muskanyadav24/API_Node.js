@@ -20,7 +20,7 @@ const authMiddle = (req, res, next) => {
 }
 
 const authorized = (roles) => {
-    console.log("Roles", roles);
+    // console.log("Roles", roles);
     return (req, res, next) => {
         if(!roles.includes(req.user.role)){
             res.status(403);
