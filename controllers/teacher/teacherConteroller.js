@@ -1,6 +1,7 @@
 const User = require("../../models/userModel")
 const bcrypt = require("bcrypt")
 
+// Welcome message
 const teacherController = async (req, res) => {
     try{
         console.log("Welcome to teacher controller")
