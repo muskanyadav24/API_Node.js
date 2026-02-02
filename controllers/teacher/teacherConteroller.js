@@ -2,6 +2,7 @@ const User = require("../../models/userModel");
 const TeacherAssign = require("../../models/teacherModel");
 const bcrypt = require("bcrypt")
 
+// Welcome message
 const teacherController = async (req, res) => {
     try {
         console.log("Welcome to teacher controller")
@@ -109,6 +110,7 @@ const teacherdelete = async (req, res) => {
         return res.json({ message: err.message });
     }
 }
+
 
 const myClasses = async (req, res) => {
     const data = await TeacherAssign.find({ teacherId: req.user.id })
