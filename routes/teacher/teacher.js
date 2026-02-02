@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {teacherController, teachercreate, teacherview, teacherupdate, teacherdelete} = require("../../controllers/teacher/teacherConteroller");
+const {teacherController, teachercreate, teacherview, teacherupdate, teacherdelete, myClasses} = require("../../controllers/teacher/teacherConteroller");
 const {authMiddle, authorized} = require("../../middlewares/authMiddlewares/authMiddle");
 
 router.get("/dashboard", authMiddle, authorized(["admin", "teacher"]), teacherController);
@@ -19,5 +19,8 @@ router.put("/tUpdate/:id", authMiddle, authorized(["admin"]), teacherupdate);
 
 // delete teacher -> delete
 router.delete("/tDelete/:id", authMiddle, authorized(["admin"]), teacherdelete);
+
+router.get("/my-classes", authMiddle, authorized(["teacher"]), myClasses);
+
 
 module.exports = router;
