@@ -29,11 +29,11 @@ const userSchema = new mongoose.Schema({
         default: "admin"
     },
     subjects: {
-        type: Array,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: "Subject"
     },
     classes: {
-        type: Array,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: "Class"
     }
 })
