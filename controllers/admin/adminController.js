@@ -117,39 +117,67 @@ const addSubject = async (req, res) => {
 
 // Assign Teacher
 const assignTeacher = async (req, res) => {
-  const { teacherId, classId, subjectId } = req.body;
+  try {
+    const { classId, teacherId, subjectId } = req.body;
 
-  // 1 TeacherAssign collection me entry
-  const assign = await TeacherAssign.create({
-    teacherId,
-    classId,
-    subjectId
-  });
+    // Class update
+    await Class.findByIdAndUpdate(classId, {
+      $addToSet: {
+        subjectsId: subjectId
+      }
+    });
 
-  // 2 User (teacher) model update (optional but recommended)
-  await User.findByIdAndUpdate(teacherId, {
-    $addToSet: {
-      subjects: subjectId,
-      classes: classId
-    }
-  });
+    // Teacher (User) update
+    await User.findByIdAndUpdate(teacherId, {
+      $addToSet: {
+        classes: classId,
+        subjects: subjectId
+      }
+    });
 
-  res.json({
-    message: "Teacher assigned to class & subject successfully",
-    assign
-  });
+    res.json({ message: "Teacher assigned successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
-// const assignTeacher = async (req, res) => {
-//     const { teacherId, classId, subjectId } = req.body;
 
-//     const assign = await TeacherAssign.create({
-//         teacherId,
-//         classId,
-//         subjectId
-//     });
+// Assign Student
+const assignStudent = async (req, res) => {
+  try {
+    const { studentId, classId } = req.body;
 
-//     res.json({ message: "Teacher assigned successfully", assign });
-// };
+    // safety check
+    if (!studentId || !classId) {
+      return res.status(400).json({ message: "studentId and classId required" });
+    }
 
-module.exports = { adminController, addClass, addSubject, assignTeacher };
+    // class me student add
+    const classData = await Class.findByIdAndUpdate(
+      classId,
+      { $addToSet: { studentsId: studentId } },
+      { new: true }
+    );
+
+    if (!classData) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    // student(user) me class add
+    await User.findByIdAndUpdate(
+      studentId,
+      { $addToSet: { classes: classId } }
+    );
+
+    res.json({
+      message: "Student assigned successfully",
+      classData
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { adminController, addClass, addSubject, assignTeacher, assignStudent };
 

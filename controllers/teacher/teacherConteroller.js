@@ -111,14 +111,22 @@ const teacherdelete = async (req, res) => {
     }
 }
 
+const teacherClasses = async (req, res) => {
+    try {
+        if (!req.user || req.user.role !== "teacher") {
+            return res.status(403).json({ message: "Access denied" });
+        }
 
-const myClasses = async (req, res) => {
-    const data = await TeacherAssign.find({ teacherId: req.user.id })
-        .populate("classId")
-        .populate("subjectId");
+        const data = await TeacherAssign.find({ teacherId: req.user.id })
+            .populate("classId")
+            .populate("subjectId");
 
-    res.json(data);
+        return res.status(200).json(data);
+    } catch (err) {
+        console.log("Error in teacherClasses", err);
+        return res.status(500).json({ message: err.message });
+    }
 };
 
 
-module.exports = { teacherController, teachercreate, teacherview, teacherupdate, teacherdelete, myClasses }
+module.exports = {teacherController, teachercreate, teacherview, teacherupdate, teacherdelete, teacherClasses}
