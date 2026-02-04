@@ -30,17 +30,13 @@ const addSubject = async (req, res) => {
 // Assign Teacher
 const assignTeacher = async (req, res) => {
   try {
-    const { classId, teacherId } = req.body;
+    const { classId, teacherId, subjectId } = req.body;
 
     const classData = await Class.findById(classId);
     if (!classData) return res.status(404).json({ message: "Class not found" });
 
     // single assignment
-<<<<<<< HEAD
-    // classData.subjectsId = subjectId;
-=======
     classData.subjectsId = subjectId;
->>>>>>> ff0dd951ea96c9766f45c7dae3a2dd914504cd47
     classData.teacherId = teacherId;
     await classData.save();
 
@@ -48,11 +44,7 @@ const assignTeacher = async (req, res) => {
     if (!teacher) return res.status(404).json({ message: "Teacher not found" });
 
     teacher.classes = classId;
-<<<<<<< HEAD
-    // teacher.subjects = subjectId;
-=======
     teacher.subjects = subjectId;
->>>>>>> ff0dd951ea96c9766f45c7dae3a2dd914504cd47
     await teacher.save();
 
     res.json({ message: "Teacher assigned successfully", data:[teacher,classData] });
@@ -68,18 +60,18 @@ const assignStudent = async (req, res) => {
     const { studentId, classId } = req.body;
 
     if (!studentId || !classId) {
-      return res.status(400).json({ message: "studentId and classId required." });
+      return res.status(400).json({ message: "studentId and classId required" });
     }
 
     const classData = await Class.findById(classId);
-    if (!classData) return res.status(404).json({ message: "Class not found." });
+    if (!classData) return res.status(404).json({ message: "Class not found" });
 
     // single student assignment
     classData.studentsId = studentId;
     await classData.save();
 
     const student = await User.findById(studentId);
-    if (!student) return res.status(404).json({ message: "Student not found." });
+    if (!student) return res.status(404).json({ message: "Student not found" });
 
     student.classes = classId;
     await student.save();
