@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {teacherController, teachercreate, teacherview, teacherupdate, teacherdelete, teacherClasses} = require("../../controllers/teacher/teacherConteroller");
+const {teacherController, teachercreate, teacherview, teacherupdate, teacherdelete, teacherClasses, markAttendance, classAttendance} = require("../../controllers/teacher/teacherConteroller");
 const {authMiddle, authorized} = require("../../middlewares/authMiddlewares/authMiddle");
 
 router.get("/dashboard", authMiddle, authorized(["admin", "teacher"]), teacherController);
@@ -20,6 +20,13 @@ router.put("/tUpdate/:id", authMiddle, authorized(["admin"]), teacherupdate);
 // delete teacher -> delete
 router.delete("/tDelete/:id", authMiddle, authorized(["admin"]), teacherdelete);
 
+// teacher dashboard -> get
 router.get("/teacher-dashboard", authMiddle, authorized(["teacher"]), teacherClasses);
+
+// mark attendance -> post
+router.post("/attendance/:classId", authMiddle, authorized(["admin", "teacher"]), markAttendance);
+
+// view attendance -> get
+router.get("/attendance/:classId", authMiddle, authorized(["admin", "teacher"]), classAttendance);
 
 module.exports = router;
