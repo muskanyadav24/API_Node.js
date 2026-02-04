@@ -1,91 +1,3 @@
-// const User = require("../../models/userModel");
-
-// const adminController = async (req, res) => {
-//     try{
-//         console.log("Welcome to admin controller")
-//         res.status(200);
-//         return res.json({ message: "Welcome to admin controller" })
-//     }catch(err){
-//         console.log("Error in admin controller", err)
-//         res.status(500);
-//         return res.json({ message: err.message })
-//     }
-// }
-
-// // view all teacher and student
-// const viewAll = async (req, res) => {
-//     try{
-//         const teachers = await User.find({role: "teacher"});
-//         const students = await User.find({role: "student"});
-//         res.status(200);
-//         return res.json({ message: "Welcome to admin view controller", teachers, students })
-//     }catch(err){
-//         console.log("Error in admin view controller", err)
-//         res.status(500);
-//         return res.json({ message: err.message })
-//     }
-// }
-
-// // delete teacher
-// const deleteTeacher = async (req, res) => {
-//     try{
-//         const {id} = req.params;
-//         const deletedTeacher = await User.findByIdAndDelete(id);
-//         res.status(200);
-//         return res.json({ message: "Teacher deleted successfully", deletedTeacher });
-//     }catch(err){
-//         console.log("Error in admin delete teacher controller", err)
-//         res.status(500);
-//         return res.json({ message: err.message })
-//     }
-// }
-
-// // delete student
-// const deleteStudent = async (req, res) => {
-//     try{
-//         const {id} = req.params;
-//         const deletedStudent = await User.findByIdAndDelete(id);
-//         res.status(200);
-//         return res.json({ message: "Student deleted successfully", deletedStudent });
-//     }catch(err){
-//         console.log("Error in admin delete student controller", err)
-//         res.status(500);
-//         return res.json({ message: err.message })
-//     }
-// }
-
-// // update teacher
-// const updateTeacher = async (req, res) => {
-//     try{
-//         const {id} = req.params;
-//         const {name, email, password} = req.body;
-//         const updatedTeacher = await User.findByIdAndUpdate(id, {name, email, password}, {new: true});
-//         res.status(200);
-//         return res.json({ message: "Teacher updated successfully", updatedTeacher });
-//     }catch(err){
-//         console.log("Error in admin update teacher controller", err)
-//         res.status(500);
-//         return res.json({ message: err.message })
-//     }
-// }
-
-// // update student
-// const updateStudent = async (req, res) => {
-//     try{
-//         const {id} = req.params;
-//         const {name, email, password} = req.body;
-//         const updatedStudent = await User.findByIdAndUpdate(id, {name, email, password}, {new: true});
-//         res.status(200);
-//         return res.json({ message: "Student updated successfully", updatedStudent });
-//     }catch(err){
-//         console.log("Error in admin update student controller", err)
-//         res.status(500);
-//         return res.json({ message: err.message })
-//     }
-// }
-
-// module.exports = { adminController , viewAll , deleteTeacher , deleteStudent , updateTeacher , updateStudent}
-
 const Class = require("../../models/classModel");
 const Subject = require("../../models/subjectModel");
 const TeacherAssign = require("../../models/teacherModel");
@@ -124,7 +36,11 @@ const assignTeacher = async (req, res) => {
     if (!classData) return res.status(404).json({ message: "Class not found" });
 
     // single assignment
+<<<<<<< HEAD
     // classData.subjectsId = subjectId;
+=======
+    classData.subjectsId = subjectId;
+>>>>>>> ff0dd951ea96c9766f45c7dae3a2dd914504cd47
     classData.teacherId = teacherId;
     await classData.save();
 
@@ -132,7 +48,11 @@ const assignTeacher = async (req, res) => {
     if (!teacher) return res.status(404).json({ message: "Teacher not found" });
 
     teacher.classes = classId;
+<<<<<<< HEAD
     // teacher.subjects = subjectId;
+=======
+    teacher.subjects = subjectId;
+>>>>>>> ff0dd951ea96c9766f45c7dae3a2dd914504cd47
     await teacher.save();
 
     res.json({ message: "Teacher assigned successfully", data:[teacher,classData] });
