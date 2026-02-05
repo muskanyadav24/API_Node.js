@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const attendanceSchema = new mongoose.Schema({
-    classId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Class",
-        required: true
-    },
     studentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required: true
+    },
+    classId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Class",
         required: true
     },
     teacherId: {
@@ -18,12 +18,17 @@ const attendanceSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now
     },
     status: {
         type: String,
-        enum: ["present", "absent"],
+        enum: ["Present", "Absent", "present", "absent"],
         required: true
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 
