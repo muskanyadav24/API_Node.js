@@ -4,27 +4,27 @@ const TeacherAssign = require("../../models/teacherModel");
 const User = require("../../models/userModel");
 
 const adminController = async (req, res) => {
-    try {
-        console.log("Welcome to admin controller")
-        res.status(200);
-        return res.json({ message: "Welcome to admin controller" })
-    } catch (err) {
-        console.log("Error in admin controller", err)
-        res.status(500);
-        return res.json({ message: err.message })
-    }
+  try {
+    console.log("Welcome to admin controller")
+    res.status(200);
+    return res.json({ message: "Welcome to admin controller" })
+  } catch (err) {
+    console.log("Error in admin controller", err)
+    res.status(500);
+    return res.json({ message: err.message })
+  }
 }
 
 // Add Class
 const addClass = async (req, res) => {
-    const data = await Class.create(req.body);
-    res.json(data);
+  const data = await Class.create(req.body);
+  res.json(data);
 };
 
 // Add Subject
 const addSubject = async (req, res) => {
-    const data = await Subject.create(req.body);
-    res.json(data);
+  const data = await Subject.create(req.body);
+  res.json(data);
 };
 
 // Assign Teacher
@@ -47,7 +47,13 @@ const assignTeacher = async (req, res) => {
     teacher.subjects = subjectId;
     await teacher.save();
 
-    res.json({ message: "Teacher assigned successfully", data:[teacher,classData] });
+    // Population of TeacherAssign collection
+    let teacherAssign = await TeacherAssign.findOne({ teacherId, classId, subjectId });
+    if (!teacherAssign) {
+      teacherAssign = await TeacherAssign.create({ teacherId, classId, subjectId });
+    }
+
+    res.json({ message: "Teacher assigned successfully", data: [teacher, classData, teacherAssign] });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -76,7 +82,7 @@ const assignStudent = async (req, res) => {
     student.classes = classId;
     await student.save();
 
-    res.json({message: "Student assigned successfully",data:[student,classData]});
+    res.json({ message: "Student assigned successfully", data: [student, classData] });
 
   } catch (err) {
     res.status(500).json({ message: err.message });
