@@ -22,22 +22,11 @@ const classSchema = new mongoose.Schema({
     teacherId: {
         type: mongoose.Schema.ObjectId,
         ref: "User"
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 });
 
 module.exports = mongoose.model("Class", classSchema);
-
-// const mongoose = require("mongoose");
-
-// const Class = new mongoose.Schema({
-//   className: {
-//         type: String,
-//         required: true
-//     }, // 6th, 7th
-//   section: {
-//         type: String,
-//         required: true
-//     },    // A, B
-// }, { timestamps: true });
-
-// module.exports = mongoose.model("Class", Class);
