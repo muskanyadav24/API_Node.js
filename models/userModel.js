@@ -36,16 +36,12 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: "Class"
     },
-    // Soft delete fields
     isDeleted: {
         type: Boolean,
         default: false
     },
-    deletedAt: {
-        type: Date,
-        default: null
-    }
-}, { timestamps: true })
+  
+})
 
 const User = mongoose.model("User", userSchema)
 
