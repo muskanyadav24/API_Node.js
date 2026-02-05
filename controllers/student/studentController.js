@@ -1,13 +1,16 @@
-const Attendance = require("../../models/attendanceModel");
-const { Class } = require("../../models/classModel");
+
+const Class = require("../../models/classModel");
 const User = require("../../models/userModel");
+const TeacherAssign = require("../../models/teacherModel");
+const Attendance = require("../../models/attendanceModel");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 // welcome message
 const myClassesStudent = async (req, res) => {
     try {
         console.log("Welcome to my classes controller")
-        const classes = await Class.find({ classStudentsId: req.user._id })
+        const classes = await Class.find({ classStudentsId: req.user._id, isDeleted: { $ne: true } })
         res.status(200);
         return res.json({ message: "Welcome to my classes controller", classes })
     } catch (err) {
@@ -59,14 +62,19 @@ const studentcreate = async (req, res) => {
 const studentview = async (req, res) => {
     try {
         console.log("Welcome to student view controller");
-        const students = await User.find({
-            role: "student",
-            isDeleted: false
-        }).select("-password");
+        let query = { role: "student", isDeleted: { $ne: true } };
 
-        // console.log("Welcome to student view controller");
-        // const students = await User.find({ role: "student" }).select("-password");
-        if (!students) {
+        // Requirement: Teacher can only see students in their classes
+        if (req.user.role === "teacher") {
+            const assignedClasses = await TeacherAssign.find({ teacherId: req.user._id || req.user.id });
+            const classIds = assignedClasses.map(a => a.classId);
+
+            // Assuming students are linked to classes via the 'classes' array in User model
+            query.classes = { $in: classIds };
+        }
+
+        const students = await User.find(query).select("-password").populate("classes");
+        if (!students || students.length === 0) {
             console.log("No students found");
             res.status(404);
             return res.json({ message: "No students found" });
@@ -109,9 +117,7 @@ const studentupdate = async (req, res) => {
     }
 }
 
-// delete student -> delete
-
-// delete student -> soft delete
+// soft delete student -> delete
 const studentdelete = async (req, res) => {
     try {
         const { id } = req.params;
@@ -137,6 +143,7 @@ const studentdelete = async (req, res) => {
     }
 };
 
+// delete student
 // const studentdelete = async (req, res) => {
 //     try{
 //         const {id} = req.params;
@@ -157,39 +164,69 @@ const studentdelete = async (req, res) => {
 //     }
 // }
 
-const myAttendancePercentage = async (req, res) => {
+const getAttendancePercentage = async (req, res) => {
     try {
+        let studentId = req.user.id || req.user._id;
+
+        if ((req.user.role === "teacher" || req.user.role === "admin") && req.query.studentId) {
+            studentId = req.query.studentId;
+        }
+
+        if (!studentId) {
+            return res.status(400).json({ message: "Student ID not found in token or query" });
+        }
+
         const { month, year } = req.query;
+        const now = new Date();
 
-        const start = new Date(year, month - 1, 1);
-        const end = new Date(year, month, 0, 23, 59, 59);
+        const m = month ? Number(month) - 1 : now.getMonth();
+        const y = year ? Number(year) : now.getFullYear();
 
-        const records = await Attendance.find({
-            studentId: req.user._id,
-            date: { $gte: start, $lte: end }
+        const startOfMonth = new Date(y, m, 1);
+        const endOfMonth = new Date(y, m + 1, 0, 23, 59, 59);
+
+        console.log(`Searching attendance for studentId: ${studentId}`);
+        console.log(`Date range: ${startOfMonth.toISOString()} to ${endOfMonth.toISOString()}`);
+
+        const attendanceRecords = await Attendance.find({
+            studentId: new mongoose.Types.ObjectId(studentId),
+            date: { $gte: startOfMonth, $lte: endOfMonth },
+            isDeleted: { $ne: true }
         });
 
-        const totalDays = records.length;
-        const presentDays = records.filter(r => r.status === "present").length;
+        console.log(`Found ${attendanceRecords.length} records`);
 
-        const percentage = totalDays === 0
-            ? 0
-            : ((presentDays / totalDays) * 100).toFixed(2);
+        if (attendanceRecords.length === 0) {
+            return res.status(200).json({
+                message: "No attendance records found for this month",
+                percentage: 0,
+                totalDays: 0,
+                presentDays: 0,
+                debug: {
+                    studentId,
+                    range: { start: startOfMonth, end: endOfMonth }
+                }
+            });
+        }
+
+        const totalDays = attendanceRecords.length;
+        const presentDays = attendanceRecords.filter(
+            a => a.status.toLowerCase() === "present"
+        ).length;
+
+        const percentage = ((presentDays / totalDays) * 100).toFixed(2);
 
         return res.status(200).json({
-            month,
-            year,
+            message: "Attendance percentage calculated",
+            percentage: Number(percentage),
             totalDays,
-            presentDays,
-            absentDays: totalDays - presentDays,
-            attendancePercentage: `${percentage}%`
+            presentDays
         });
 
     } catch (err) {
-        console.log("Error in myAttendancePercentage", err);
+        console.log("Error in getAttendancePercentage", err);
         return res.status(500).json({ message: err.message });
     }
 };
 
-
-module.exports = { myClassesStudent, studentController, studentcreate, studentview, studentupdate, studentdelete, myAttendancePercentage }
+module.exports = { myClassesStudent, studentController, studentcreate, studentview, studentupdate, studentdelete, getAttendancePercentage }
