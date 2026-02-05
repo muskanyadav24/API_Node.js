@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const {myClassesStudent, studentcreate, studentview, studentupdate, studentdelete, myAttendancePercentage} = require("../../controllers/student/studentController");
-const {authMiddle, authorized} = require("../../middlewares/authMiddlewares/authMiddle");
+const { myClassesStudent, studentcreate, studentview, studentupdate, studentdelete, getAttendancePercentage } = require("../../controllers/student/studentController");
+const { authMiddle, authorized } = require("../../middlewares/authMiddlewares/authMiddle");
 
 router.get("/student-dashboard", authMiddle, authorized(["admin", "teacher", "student"]), myClassesStudent);
 
@@ -19,6 +19,6 @@ router.put("/sUpdate/:id", authMiddle, authorized(["admin", "teacher"]), student
 router.delete("/sDelete/:id", authMiddle, authorized(["admin"]), studentdelete);
 
 // view attendance -> get
-router.get("/attendance", authMiddle, authorized(["admin", "teacher", "student"]), myAttendancePercentage);
+router.get("/attendancePercentage", authMiddle, authorized(["admin","teacher","student"]), getAttendancePercentage);
 
 module.exports = router;
