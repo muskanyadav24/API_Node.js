@@ -1,4 +1,3 @@
-
 const Class = require("../../models/classModel");
 const User = require("../../models/userModel");
 const TeacherAssign = require("../../models/teacherModel");
