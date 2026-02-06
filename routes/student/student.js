@@ -20,6 +20,5 @@ router.delete("/sDelete/:id", authMiddle, authorized(["admin"]), studentdelete);
 
 // view attendance -> get
 router.get("/attendancePercentage", authMiddle, authorized(["admin","teacher","student"]), getAttendancePercentage);
-router.get("/percentage", authMiddle, authorized(["admin","teacher","student"]), getAttendancePercentage);
 
 module.exports = router;
