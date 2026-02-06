@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+// Generate Token 
 const generateToken = (payload) => {
     let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
     console.log("Token generated successfully", token);
@@ -7,6 +8,7 @@ const generateToken = (payload) => {
     return token;
 }
 
+// Token verify 
 const verifyToken = (token) => {
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Token verified successfully", decoded);
